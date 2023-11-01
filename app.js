@@ -25,10 +25,26 @@ app.get('/api/v1/tours', function (request, response) {
     },
   });
 });
+app.get('/api/v1/tours/:id', function (request, response) {
+  const { id } = request.params;
+  if (id > tours.length)
+    return response.status(404).json({
+      status: 'fail',
+      message: 'invalid id',
+    });
+  const tour = tours[id];
+  response.status(200).json({
+    status: 'success',
+    result: 1,
+    data: {
+      tour,
+    },
+  });
+});
 
 app.post('/api/v1/tours', function (request, response) {
   //  console.log(request.body);
-  const newId = tours[tours.length - 1].id + 1;
+  const newId = tours[tours.ngth - 1].id + 1;
   const newTour = Object.assign({ id: newId }, request.body);
   tours.push(newTour);
   fs.writeFile(
