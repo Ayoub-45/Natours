@@ -2,6 +2,7 @@ const fs = require('fs');
 const express = require('express');
 const app = express();
 const PORT = 3000;
+app.use(express.json());
 /*
 app.get('/', function (request, response) {
   response
@@ -13,7 +14,7 @@ app.post('/Natours', function (request, response) {
 });
 */
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours.json`)
+  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 app.get('/api/v1/tours', function (request, response) {
   response.status(200).json({
@@ -23,6 +24,26 @@ app.get('/api/v1/tours', function (request, response) {
       tours,
     },
   });
+});
+
+app.post('/api/v1/tours', function (request, response) {
+  //  console.log(request.body);
+  const newId = tours[tours.length - 1].id + 1;
+  const newTour = Object.assign({ id: newId }, request.body);
+  tours.push(newTour);
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      response.status(201).json({
+        status: 'success',
+        result: tours.length,
+        data: {
+          tours,
+        },
+      });
+    }
+  );
 });
 app.listen(PORT, function () {
   console.log('App is running on port ' + PORT);
