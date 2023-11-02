@@ -1,14 +1,23 @@
 const fs = require('fs');
 const express = require('express');
 const app = express();
+const morgan = require('morgan');
 const PORT = 3000;
 app.use(express.json());
-
+app.use(morgan('dev'));
+app.use(function (request, response, next) {
+  request.requestedTime = new Date().toISOString();
+  next();
+});
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
+const users = JSON.parse(
+  fs.readFileSync(`${__dirname}/dev-data/data/users.json`)
+);
 const getAllTours = function (request, response) {
   response.status(200).json({
+    requestedAt: request.requestedTime,
     status: 'success',
     results: tours.length,
     data: {
@@ -75,13 +84,59 @@ const deleteTour = function (request, response) {
     data: null,
   });
 };
+const tourRouter = express.Router();
 
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+tourRouter.route('/').get(getAllTours).post(createTour);
+
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+
+const getAllUsers = function (request, response) {
+  response.status(200).json({
+    results: 'success',
+    data: {
+      users,
+    },
+  });
+};
+const getUser = function (request, response) {
+  const { id } = request.params;
+  const idIsExist = users.find((user) => id === user);
+  if (!idIsExist)
+    return response.status(404).json({
+      status: 'Fail',
+      message: 'User not found',
+    });
+  else {
+    const user = users[id];
+    response.status(200).json({
+      status: 'success',
+      data: user,
+    });
+  }
+};
+const createUser = function (request, response) {
+  response.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+const updateUser = function (request, response) {
+  response.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+const deleteUser = function (request, response) {
+  response.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+const userRouter = express.Router();
+userRouter.route('/').get(getAllUsers).post(createUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/tours', tourRouter);
 app.listen(PORT, function () {
   console.log('App is running on port ' + PORT);
 });
