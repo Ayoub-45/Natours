@@ -3,20 +3,11 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 app.use(express.json());
-/*
-app.get('/', function (request, response) {
-  response
-    .status(200)
-    .json({ message: 'Hello from the server side', app: 'Natours' });
-});
-app.post('/Natours', function (request, response) {
-  response.send('Hey again ...');
-});
-*/
+
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
-app.get('/api/v1/tours', function (request, response) {
+const getAllTours = function (request, response) {
   response.status(200).json({
     status: 'success',
     results: tours.length,
@@ -24,8 +15,8 @@ app.get('/api/v1/tours', function (request, response) {
       tours,
     },
   });
-});
-app.get('/api/v1/tours/:id', function (request, response) {
+};
+const getTour = function (request, response) {
   const { id } = request.params;
   if (id > tours.length)
     return response.status(404).json({
@@ -40,9 +31,8 @@ app.get('/api/v1/tours/:id', function (request, response) {
       tour,
     },
   });
-});
-
-app.post('/api/v1/tours', function (request, response) {
+};
+const createTour = function (request, response) {
   //  console.log(request.body);
   const newId = tours[tours.ngth - 1].id + 1;
   const newTour = Object.assign({ id: newId }, request.body);
@@ -60,8 +50,8 @@ app.post('/api/v1/tours', function (request, response) {
       });
     }
   );
-});
-app.patch('/api/v1/tours/:id', function (request, response) {
+};
+const updateTour = function (request, response) {
   if (request.params.id > tours.length)
     return response.status(404).json({
       status: 'Fail',
@@ -73,8 +63,8 @@ app.patch('/api/v1/tours/:id', function (request, response) {
       tour: 'Tour updated',
     },
   });
-});
-app.delete('/api/v1/tours/:id', function (request, response) {
+};
+const deleteTour = function (request, response) {
   if (request.params.id > tours.length)
     return response.status(404).json({
       status: 'Fail',
@@ -84,7 +74,14 @@ app.delete('/api/v1/tours/:id', function (request, response) {
     status: 'success',
     data: null,
   });
-});
+};
+
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
 app.listen(PORT, function () {
   console.log('App is running on port ' + PORT);
 });
