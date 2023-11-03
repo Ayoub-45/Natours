@@ -2,21 +2,21 @@ const fs = require('fs');
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
-exports.createTour = function (request, response) {
-  //  console.log(request.body);
+exports.createTour = function (req, res) {
+  // console.log(req.body);
   const newId = tours[tours.length - 1].id + 1;
-  console.log(newId);
-  const newTour = Object.assign({ id: newId }, request.body);
+  const newTour = Object.assign({ id: newId }, req.body);
+
   tours.push(newTour);
+
   fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) => {
-      response.status(201).json({
+      res.status(201).json({
         status: 'success',
-        result: tours.length,
         data: {
-          tours,
+          tour: newTour,
         },
       });
     }
@@ -32,10 +32,10 @@ exports.checkId = function (request, response, next, value) {
   }
   next();
 };
-exports.checkBody = function (request, response, next, value) {
+exports.checkBody = function (request, response, next) {
   if (!request.body.name || !request.body.price) {
     return response.status(400).json({
-      status: 'Fail',
+      status: 'fail',
       message: 'Missing name or price',
     });
   }
