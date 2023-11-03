@@ -21,12 +21,17 @@ exports.createTour = function (request, response) {
     }
   );
 };
-exports.updateTour = function (request, response) {
-  if (request.params.id > tours.length)
+exports.checkId = function (request, response, next, value) {
+  console.log(`Tour 's id is : ${value}`);
+  if (request.params.id > tours.length) {
     return response.status(404).json({
-      status: 'Fail',
-      message: 'invalid id',
+      status: 'fail',
+      message: 'Invalid Id',
     });
+  }
+  next();
+};
+exports.updateTour = function (request, response) {
   response.status(200).json({
     status: 'success',
     data: {
@@ -35,11 +40,6 @@ exports.updateTour = function (request, response) {
   });
 };
 exports.deleteTour = function (request, response) {
-  if (request.params.id > tours.length)
-    return response.status(404).json({
-      status: 'Fail',
-      message: 'invalid id',
-    });
   response.status(204).json({
     status: 'success',
     data: null,
@@ -57,13 +57,7 @@ exports.getAllTours = function (request, response) {
   });
 };
 exports.getTour = function (request, response) {
-  const { id } = request.params;
-  if (id > tours.length)
-    return response.status(404).json({
-      status: 'fail',
-      message: 'invalid id',
-    });
-  const tour = tours[id];
+  const tour = tours[request.params.id];
   response.status(200).json({
     status: 'success',
     result: 1,
