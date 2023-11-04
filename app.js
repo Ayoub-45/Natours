@@ -1,15 +1,16 @@
-const fs = require('fs');
 const express = require('express');
-const app = express();
 const morgan = require('morgan');
-
 const userRouter = require('./routes/userRoutes');
 const tourRouter = require('./routes/tourRoutes');
+
+const app = express();
+if (process.env.NODE_ENV === 'developement') {
+  app.use(morgan('dev'));
+}
 app.use(express.json());
-app.use(morgan('dev'));
 app.use(express.static(`${__dirname}/public`));
-app.use(function (request, response, next) {
-  request.requestedTime = new Date().toISOString();
+app.use((req, resp, next) => {
+  req.requestedTime = new Date().toISOString();
   next();
 });
 
