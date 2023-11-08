@@ -19,6 +19,7 @@ const tourSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'A tour must have a name'],
+    unique: true,
   },
   rating: {
     type: Number,
@@ -31,6 +32,15 @@ const tourSchema = new mongoose.Schema({
 });
 //Creating our model, the first letter has to be in uppercase
 const Tour = mongoose.model('Tour', tourSchema);
+//Creating a document
+const testTour = new Tour({
+  name: 'Park Camper',
+  price: 400,
+});
+testTour
+  .save()
+  .then((doc) => console.log(doc))
+  .catch((err) => console.log('Error 😥', err));
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`App running on port ${port}...`);
