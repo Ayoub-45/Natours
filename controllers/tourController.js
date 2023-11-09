@@ -24,16 +24,31 @@ exports.createTour = async (req, res) => {
   }
 };
 
-exports.updateTour = function (request, response) {
-  response.status(200).json({
-    status: 'success',
-    data: {
-      tour: 'Tour updated',
-    },
-  });
+exports.updateTour = async (request, response) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(request.params.id, request.body, {
+      new: true,
+      runValidaters: true,
+    });
+    response.status(200).json({
+      status: 'Success',
+      data: {
+        message: 'data updated successfully',
+        tour,
+      },
+    });
+  } catch (err) {
+    response.status(400).json({
+      status: 'error',
+      data: {
+        status: 'fail',
+        Error: err,
+      },
+    });
+  }
 };
 exports.deleteTour = function (request, response) {
-  response.status(204).json({
+  response.status(200).json({
     status: 'success',
     data: null,
   });
