@@ -39,25 +39,36 @@ exports.deleteTour = function (request, response) {
   });
 };
 
-exports.getAllTours = function (request, response) {
-  /*response.status(200).json({
-    requestedAt: request.requestedTime,
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-  */
+exports.getAllTours = async (request, response) => {
+  try {
+    const tours = await Tour.find();
+    response.status(200).json({
+      status: 'success',
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {
+    response.status(400).json({
+      status: 'error',
+      data: {
+        status: 'fail',
+        Error: error.message,
+      },
+    });
+  }
 };
-exports.getTour = function (request, response) {
-  /*const tour = tours[request.params.id];
-  response.status(200).json({
-    status: 'success',
-    result: 1,
-    data: {
-      tour,
-    },
-  });
-  */
+exports.getTour = async (request, response) => {
+  try {
+    const tour = await Tour.findById(request.params.id);
+    response.status(200).json({
+      status: 'success',
+      data: tour,
+    });
+  } catch (error) {
+    response.status(404).json({
+      status: 'fail',
+      error: error.message,
+    });
+  }
 };
