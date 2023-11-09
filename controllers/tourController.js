@@ -47,11 +47,24 @@ exports.updateTour = async (request, response) => {
     });
   }
 };
-exports.deleteTour = function (request, response) {
-  response.status(200).json({
-    status: 'success',
-    data: null,
-  });
+exports.deleteTour = async (request, response) => {
+  try {
+    const tour = await Tour.findByIdAndDelete(request.params.id);
+
+    response.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (err) {
+    response.status(400).json({
+      status: 'fail',
+      data: {
+        err,
+      },
+    });
+  }
 };
 
 exports.getAllTours = async (request, response) => {
