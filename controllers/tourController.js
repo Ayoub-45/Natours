@@ -1,46 +1,29 @@
-const fs = require('fs');
+const Tour = require('../models/tourModel');
+/*
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
-exports.createTour = function (req, res) {
-  // console.log(req.body);
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
-
-  tours.push(newTour);
-
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
-};
-exports.checkId = function (request, response, next, value) {
-  console.log(`Tour 's id is : ${value}`);
-  if (request.params.id > tours.length) {
-    return response.status(404).json({
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
+);*/
+exports.createTour = async (req, res) => {
+  try {
+    const newTour = await Tour.create(req.body);
+    res.status(201).json({
+      status: 'data recieved',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (err) {
+    console.log(
+      'There was an error creating your Document Tour :',
+      err.message,
+    );
+    res.status(400).json({
       status: 'fail',
-      message: 'Invalid Id',
+      message: err.message,
     });
   }
-  next();
 };
-exports.checkBody = function (request, response, next) {
-  if (!request.body.name || !request.body.price) {
-    return response.status(400).json({
-      status: 'fail',
-      message: 'Missing name or price',
-    });
-  }
-  next();
-};
+
 exports.updateTour = function (request, response) {
   response.status(200).json({
     status: 'success',
@@ -57,7 +40,7 @@ exports.deleteTour = function (request, response) {
 };
 
 exports.getAllTours = function (request, response) {
-  response.status(200).json({
+  /*response.status(200).json({
     requestedAt: request.requestedTime,
     status: 'success',
     results: tours.length,
@@ -65,9 +48,10 @@ exports.getAllTours = function (request, response) {
       tours,
     },
   });
+  */
 };
 exports.getTour = function (request, response) {
-  const tour = tours[request.params.id];
+  /*const tour = tours[request.params.id];
   response.status(200).json({
     status: 'success',
     result: 1,
@@ -75,4 +59,5 @@ exports.getTour = function (request, response) {
       tour,
     },
   });
+  */
 };
