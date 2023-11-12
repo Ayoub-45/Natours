@@ -1,8 +1,5 @@
 const Tour = require('../models/tourModel');
-/*
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`),
-);*/
+
 exports.createTour = async (req, res) => {
   try {
     const newTour = await Tour.create(req.body);
