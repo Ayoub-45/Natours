@@ -1,3 +1,4 @@
+const { query } = require('express');
 const Tour = require('../models/tourModel');
 
 exports.createTour = async (req, res) => {
@@ -66,7 +67,16 @@ exports.deleteTour = async (request, response) => {
 
 exports.getAllTours = async (request, response) => {
   try {
-    const tours = await Tour.find();
+    const queryObj = { ...request.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+    console.log(request.body, queryObj);
+    const query = Tour.find(queryObj);
+    let queryStr = JSON.stringify(queryObj);
+    queryStr.replace(/(gte|gt|lte|lt)/g, (match) => `$${match}`);
+    console.log(JSON.parse(queryStr));
+    const tours = await query;
+
     response.status(200).json({
       status: 'success',
       data: {
